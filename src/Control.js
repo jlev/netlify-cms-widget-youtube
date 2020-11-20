@@ -5,7 +5,13 @@ import urlParser from "js-video-url-parser";
 export default class Control extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { valid: false, data: {} };
+		if (this.props.value) {
+			// assume saved values are valid
+			this.state = { valid: true, data: this.props.value };
+			this.componentDidUpdate(this.props, this.state);
+		} else {
+			this.state = { valid: false, data: {} };
+		}
 	}
 	static propTypes = {
 		onChange: PropTypes.func.isRequired,
@@ -23,7 +29,7 @@ export default class Control extends React.Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		const { data, valid } = this.state;
-		const isDataChanged = (data.title !== prevState.data.title);
+		const isDataChanged = (data.url !== prevState.data.url);
 		if (valid && isDataChanged) {
 			try {
 				const { id, provider, mediaType } = urlParser.parse(data.url);
@@ -127,7 +133,7 @@ export default class Control extends React.Component {
 					onFocus={setActiveStyle}
 					onBlur={setInactiveStyle}>
 					<span className="nc-imageControl-message">
-						{data.title && valid ? (
+						{data.url && valid ? (
 							<div className="nc-imageControl-content">
 								<div
 									style={{ flexShrink: 0, width: 120, height: 82 }}
